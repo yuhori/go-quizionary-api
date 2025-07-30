@@ -23,9 +23,19 @@ func New(dir string) (*Handler, error) {
 	return h, nil
 }
 
-func (h *Handler) GetFourOptionQuestions(c *gin.Context) {
-	// ここに4択問題の取得ロジックを実装
-	c.JSON(200, gin.H{"message": "Get four option questions"})
+func (h *Handler) GetFourOptionQuizzes(c *gin.Context) {
+	// QuizManagerから4択問題を取得
+	quizzes, err := h.quizManager.ChooseQuizzes(
+		quiz.FourOptionQuiz,
+		4,
+		[]string{"tag1", "tag2"},
+	)
+	if err != nil {
+		c.JSON(500, gin.H{"error": fmt.Sprintf("failed to get quizzes: %v", err)})
+		return
+	}
+	// 取得した問題をJSON形式で返す
+	c.JSON(200, gin.H{"quizzes": quizzes})
 }
 
 func (h *Handler) OK(c *gin.Context) {

@@ -24,12 +24,12 @@ const (
 )
 
 type QuizManager struct {
-	fourOptionQuizzes map[string]Quiz
+	fourOptionQuizzes map[string][]Quiz
 }
 
 func New(dir string) (*QuizManager, error) {
 	manager := &QuizManager{
-		fourOptionQuizzes: make(map[string]Quiz),
+		fourOptionQuizzes: make(map[string][]Quiz),
 	}
 
 	// dir 以下のファイルを全て読み込む
@@ -45,12 +45,12 @@ func New(dir string) (*QuizManager, error) {
 				return fmt.Errorf("failed to read file %s: %w", path, err)
 			}
 
-			var quiz Quiz
-			if err := json.Unmarshal(content, &quiz); err != nil {
+			var quizzes []Quiz
+			if err := json.Unmarshal(content, &quizzes); err != nil {
 				return fmt.Errorf("failed to parse JSON in file %s: %w", path, err)
 			}
 
-			manager.fourOptionQuizzes[path] = quiz
+			manager.fourOptionQuizzes[path] = quizzes
 		}
 		return nil
 	}); err != nil {
@@ -67,5 +67,6 @@ func (qm *QuizManager) ChooseQuizzes(
 	targetTags []string,
 ) ([]string, error) {
 	// TODO: 実装
+	// fmt.Println(qm.fourOptionQuizzes["1"])
 	return []string{"Question 1", "Question 2", "Question 3", "Question 4"}, nil
 }

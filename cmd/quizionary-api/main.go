@@ -19,14 +19,14 @@ func main() {
 	gin.SetMode(gin.ReleaseMode)
 
 	// Handler のインスタンスを作成
-	h, err := handler.New("files")
+	h, err := handler.New("files/four_option")
 	if err != nil {
 		panic(fmt.Errorf("failed to create handler: %w", err))
 	}
 
 	// Routerの設定
 	r := gin.Default()
-	r.GET("/four-option-questions", h.GetFourOptionQuestions)
+	r.GET("/four-option-questions", h.GetFourOptionQuizzes)
 	r.GET("/ok", h.OK)
 
 	// Port
