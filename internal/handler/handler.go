@@ -27,8 +27,8 @@ func (h *Handler) GetFourOptionQuizzes(c *gin.Context) {
 	// QuizManagerから4択問題を取得
 	quizzes, err := h.quizManager.ChooseQuizzes(
 		quiz.FourOptionQuiz,
+		0,
 		10,
-		[]string{"tag1", "tag2"},
 	)
 	if err != nil {
 		c.JSON(500, gin.H{"error": fmt.Sprintf("failed to get quizzes: %v", err)})

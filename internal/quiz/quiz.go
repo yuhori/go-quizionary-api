@@ -7,6 +7,8 @@ import (
 	"os"
 	"path/filepath"
 
+	"math/rand"
+
 	"github.com/yuhori/go-quizionary-api/internal/utils"
 )
 
@@ -74,13 +76,41 @@ func New(dir string) (*QuizManager, error) {
 
 func (qm *QuizManager) ChooseQuizzes(
 	quizType QuizType,
+	quizChapter int,
 	quizNum int,
-	targetTags []string,
 ) ([]Quiz, error) {
 	switch quizType {
 	case FourOptionQuiz:
-		return qm.fourOptionQuizzes[0], nil // ここでは最初のセットを返すだけ
+		return pickRandomQuizzes(qm.fourOptionQuizzes[quizChapter], quizNum), nil
 	default:
 		return nil, fmt.Errorf("unsupported quiz type: %s", quizType)
 	}
+}
+
+// func (qm *QuizManager) FilterQuizzes(
+// 	quizType QuizType,
+// 	targetTags []string,
+// ) ([]Quiz, error) {
+// 	switch quizType {
+// 	case FourOptionQuiz:
+// 		return qm.filterFourOptionQuizzes(targetTags), nil
+// 	default:
+// 		return nil, fmt.Errorf("unsupported quiz type: %s", quizType)
+// 	}
+// }
+
+func pickRandomQuizzes(quizzes Quizzes, count int) Quizzes {
+	if len(quizzes) < count {
+		count = len(quizzes)
+	}
+
+	// シャッフル
+	shuffled := make(Quizzes, len(quizzes))
+	copy(shuffled, quizzes)
+	rand.Shuffle(len(shuffled), func(i, j int) {
+		shuffled[i], shuffled[j] = shuffled[j], shuffled[i]
+	})
+
+	// 先頭から count 個取得
+	return shuffled[:count]
 }
