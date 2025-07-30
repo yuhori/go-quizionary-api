@@ -81,23 +81,11 @@ func (qm *QuizManager) ChooseQuizzes(
 ) ([]Quiz, error) {
 	switch quizType {
 	case FourOptionQuiz:
-		return pickRandomQuizzes(qm.fourOptionQuizzes[quizChapter], quizNum), nil
+		return pickRandomQuizzes(qm.fourOptionQuizzes[quizChapter-1], quizNum), nil
 	default:
 		return nil, fmt.Errorf("unsupported quiz type: %s", quizType)
 	}
 }
-
-// func (qm *QuizManager) FilterQuizzes(
-// 	quizType QuizType,
-// 	targetTags []string,
-// ) ([]Quiz, error) {
-// 	switch quizType {
-// 	case FourOptionQuiz:
-// 		return qm.filterFourOptionQuizzes(targetTags), nil
-// 	default:
-// 		return nil, fmt.Errorf("unsupported quiz type: %s", quizType)
-// 	}
-// }
 
 func pickRandomQuizzes(quizzes Quizzes, count int) Quizzes {
 	if len(quizzes) < count {

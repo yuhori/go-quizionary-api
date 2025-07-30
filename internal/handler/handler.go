@@ -27,7 +27,7 @@ func (h *Handler) GetFourOptionQuizzes(c *gin.Context) {
 	// QuizManagerから4択問題を取得
 	quizzes, err := h.quizManager.ChooseQuizzes(
 		quiz.FourOptionQuiz,
-		0,
+		1,
 		10,
 	)
 	if err != nil {
