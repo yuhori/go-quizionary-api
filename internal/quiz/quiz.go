@@ -6,6 +6,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 type Quiz struct {
@@ -50,7 +51,12 @@ func New(dir string) (*QuizManager, error) {
 				return fmt.Errorf("failed to parse JSON in file %s: %w", path, err)
 			}
 
-			manager.fourOptionQuizzes[path] = quizzes
+			// ファイル名を取得
+			filenameWithExt := filepath.Base(path)                                         // => "example.json"
+			filename := strings.TrimSuffix(filenameWithExt, filepath.Ext(filenameWithExt)) // => "example"
+
+			// ファイル名をキーにしてクイズを保存
+			manager.fourOptionQuizzes[filename] = quizzes
 		}
 		return nil
 	}); err != nil {
@@ -65,8 +71,11 @@ func (qm *QuizManager) ChooseQuizzes(
 	quizType QuizType,
 	quizNum int,
 	targetTags []string,
-) ([]string, error) {
+) ([]Quiz, error) {
+	if quizType != FourOptionQuiz {
+		return nil, fmt.Errorf("unsupported quiz type: %s", quizType)
+	}
 	// TODO: 実装
-	// fmt.Println(qm.fourOptionQuizzes["1"])
-	return []string{"Question 1", "Question 2", "Question 3", "Question 4"}, nil
+	fmt.Println(qm.fourOptionQuizzes)
+	return qm.fourOptionQuizzes["1"], nil
 }
