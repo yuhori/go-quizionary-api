@@ -48,21 +48,21 @@ func New(path string) (*InfoManager, error) {
 }
 
 // GetTitles
-func (im *InfoManager) GetTitles(bookType request.BookType) []string {
+func (im *InfoManager) GetTitles(bookType request.TestamentType) []string {
 	titles := make([]string, 0)
 
 	switch bookType {
-	case request.OldBookType:
+	case request.OldTestamentType:
 		for _, book := range im.info.Old {
 			titles = append(titles, book.Name)
 		}
 		return titles
-	case request.NewBookType:
+	case request.NewTestamentType:
 		for _, book := range im.info.New {
 			titles = append(titles, book.Name)
 		}
 		return titles
-	case request.AllBookType:
+	case request.AllTestamentType:
 		// 古約と新約の両方のタイトルを追加
 		for _, book := range im.info.Old {
 			titles = append(titles, book.Name)

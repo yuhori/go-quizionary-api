@@ -7,61 +7,71 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type BookType string
+type TestamentType string
 
 const (
-	OldBookType BookType = "old"
-	NewBookType BookType = "new"
-	AllBookType BookType = "all"
+	OldTestamentType TestamentType = "old"
+	NewTestamentType TestamentType = "new"
+	AllTestamentType TestamentType = "all"
 )
 
 type GetFourOptionQuizzesRequest struct {
-	QuizIndex int
-	QuizNum   int
+	TestamentType TestamentType
+	Index         int
+	Num           int
 }
 
 type GetTitlesRequest struct {
-	BookType BookType
+	TestamentType TestamentType
 }
 
 func ParseGetFourOptionQuizzesRequest(c *gin.Context) (*GetFourOptionQuizzesRequest, error) {
 	// クエリパラメータから値を取得
-	index := c.Query("index")
-	num := c.Query("num")
+	testamentType := c.DefaultQuery("type", string(AllTestamentType))
+	indexStr := c.Query("index")
+	numStr := c.Query("num")
 
 	// int に変換
-	quizIndex, err := strconv.Atoi(index)
+	index, err := strconv.Atoi(indexStr)
 	if err != nil {
 		return nil, fmt.Errorf("invalid index: %w", err)
 	}
-	quizNum, err := strconv.Atoi(num)
+	num, err := strconv.Atoi(numStr)
 	if err != nil {
 		return nil, fmt.Errorf("invalid num: %w", err)
 	}
 
 	// バリデーション
-	if quizIndex < 1 || quizIndex > 66 {
+	if testamentType != string(OldTestamentType) && testamentType != string(NewTestamentType) && testamentType != string(AllTestamentType) {
+		return nil, fmt.Errorf("invalid type: %s, must be 'old', 'new', or 'all'", testamentType)
+	}
+
+	// index の調整
+	if testamentType == string(NewTestamentType) {
+		index += 39
+	}
+	if index < 1 || index > 66 {
 		return nil, fmt.Errorf("index must be between 1 and 66")
 	}
-	if quizNum < 1 {
+	if num < 1 {
 		return nil, fmt.Errorf("num must be greater than 0")
 	}
 	return &GetFourOptionQuizzesRequest{
-		QuizIndex: quizIndex,
-		QuizNum:   quizNum,
+		Index: index,
+		Num:   num,
 	}, nil
 }
 
 func ParseGetTitlesRequest(c *gin.Context) (*GetTitlesRequest, error) {
 	// クエリパラメータから値を取得
-	bookType := c.DefaultQuery("type", string(AllBookType))
+	testamentType := c.DefaultQuery("type", string(AllTestamentType))
 
 	// バリデーション
-	if bookType != string(OldBookType) && bookType != string(NewBookType) && bookType != string(AllBookType) {
-		return nil, fmt.Errorf("invalid book type: %s", bookType)
+	if testamentType != string(OldTestamentType) && testamentType != string(NewTestamentType) && testamentType != string(AllTestamentType) {
+		return nil, fmt.Errorf("invalid type: %s, must be 'old', 'new', or 'all'", testamentType)
 	}
 
 	return &GetTitlesRequest{
-		BookType: BookType(bookType),
+		TestamentType: TestamentType(testamentType),
 	}, nil
 }

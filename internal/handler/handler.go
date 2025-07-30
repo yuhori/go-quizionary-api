@@ -45,8 +45,8 @@ func (h *Handler) GetFourOptionQuizzes(c *gin.Context) {
 	// QuizManagerから4択問題を取得
 	quizzes, err := h.quizManager.ChooseQuizzes(
 		quiz.FourOptionQuiz,
-		req.QuizIndex,
-		req.QuizNum,
+		req.Index,
+		req.Num,
 	)
 	if err != nil {
 		c.JSON(500, gin.H{"error": fmt.Sprintf("failed to get quizzes: %v", err)})
@@ -66,7 +66,7 @@ func (h *Handler) GetTitles(c *gin.Context) {
 
 	// QuizManagerから4択問題を取得
 	titles := h.infoManager.GetTitles(
-		req.BookType,
+		req.TestamentType,
 	)
 
 	// 取得した問題をJSON形式で返す
