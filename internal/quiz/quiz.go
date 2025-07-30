@@ -6,7 +6,8 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
-	"strings"
+
+	"github.com/yuhori/go-quizionary-api/internal/utils"
 )
 
 type Quiz struct {
@@ -18,6 +19,8 @@ type Quiz struct {
 	Tags        []string `json:"tags"`
 }
 
+type Quizzes []Quiz
+
 type QuizType string
 
 const (
@@ -25,46 +28,48 @@ const (
 )
 
 type QuizManager struct {
-	fourOptionQuizzes map[string][]Quiz
+	fourOptionQuizzes []Quizzes
 }
 
 func New(dir string) (*QuizManager, error) {
-	manager := &QuizManager{
-		fourOptionQuizzes: make(map[string][]Quiz),
-	}
-
-	// dir 以下のファイルを全て読み込む
-	if err := filepath.WalkDir(dir, func(path string, d fs.DirEntry, err error) error {
+	// ディレクトリ内のファイルを取得
+	var files []string
+	err := filepath.WalkDir(dir, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
-			return fmt.Errorf("failed to access path %s: %w", path, err)
+			return err
 		}
-
 		if !d.IsDir() {
-			// ファイル内容を読み取る
-			content, err := os.ReadFile(path)
-			if err != nil {
-				return fmt.Errorf("failed to read file %s: %w", path, err)
-			}
-
-			var quizzes []Quiz
-			if err := json.Unmarshal(content, &quizzes); err != nil {
-				return fmt.Errorf("failed to parse JSON in file %s: %w", path, err)
-			}
-
-			// ファイル名を取得
-			filenameWithExt := filepath.Base(path)                                         // => "example.json"
-			filename := strings.TrimSuffix(filenameWithExt, filepath.Ext(filenameWithExt)) // => "example"
-
-			// ファイル名をキーにしてクイズを保存
-			manager.fourOptionQuizzes[filename] = quizzes
+			files = append(files, path)
 		}
 		return nil
-	}); err != nil {
-		return nil, fmt.Errorf("failed to walk directory %s: %w", dir, err)
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	// 数字順にソート
+	utils.NumericFileSort(files)
+
+	// ファイルを順に読み込む
+	fourOptionQuizzes := make([]Quizzes, 0)
+	for _, file := range files {
+		content, err := os.ReadFile(file)
+		if err != nil {
+			return nil, err
+		}
+
+		var quizzes Quizzes
+		if err := json.Unmarshal(content, &quizzes); err != nil {
+			return nil, fmt.Errorf("failed to parse JSON in file %s: %w", file, err)
+		}
+		fourOptionQuizzes = append(fourOptionQuizzes, quizzes)
 	}
 
 	// QuizManagerの初期化
-	return manager, nil
+	qm := &QuizManager{
+		fourOptionQuizzes: fourOptionQuizzes,
+	}
+	return qm, nil
 }
 
 func (qm *QuizManager) ChooseQuizzes(
@@ -76,6 +81,5 @@ func (qm *QuizManager) ChooseQuizzes(
 		return nil, fmt.Errorf("unsupported quiz type: %s", quizType)
 	}
 	// TODO: 実装
-	fmt.Println(qm.fourOptionQuizzes)
-	return qm.fourOptionQuizzes["1"], nil
+	return qm.fourOptionQuizzes[0], nil
 }
