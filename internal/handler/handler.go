@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/yuhori/go-quizionary-api/internal/quiz"
+	"github.com/yuhori/go-quizionary-api/internal/request"
 )
 
 type Handler struct {
@@ -24,11 +25,18 @@ func New(dir string) (*Handler, error) {
 }
 
 func (h *Handler) GetFourOptionQuizzes(c *gin.Context) {
+	// リクエストをパース
+	req, err := request.ParseGetFourOptionQuizzesRequest(c)
+	if err != nil {
+		c.JSON(400, gin.H{"error": fmt.Sprintf("invalid request: %v", err)})
+		return
+	}
+
 	// QuizManagerから4択問題を取得
 	quizzes, err := h.quizManager.ChooseQuizzes(
 		quiz.FourOptionQuiz,
-		1,
-		10,
+		req.QuizChapter,
+		req.QuizNum,
 	)
 	if err != nil {
 		c.JSON(500, gin.H{"error": fmt.Sprintf("failed to get quizzes: %v", err)})
