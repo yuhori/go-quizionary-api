@@ -77,9 +77,10 @@ func (qm *QuizManager) ChooseQuizzes(
 	quizNum int,
 	targetTags []string,
 ) ([]Quiz, error) {
-	if quizType != FourOptionQuiz {
+	switch quizType {
+	case FourOptionQuiz:
+		return qm.fourOptionQuizzes[0], nil // ここでは最初のセットを返すだけ
+	default:
 		return nil, fmt.Errorf("unsupported quiz type: %s", quizType)
 	}
-	// TODO: 実装
-	return qm.fourOptionQuizzes[0], nil
 }
