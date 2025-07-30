@@ -10,20 +10,28 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/yuhori/go-quizionary-api/internal/handler"
 )
 
 func main() {
+	// Ginのデフォルトモードを設定
+	gin.SetMode(gin.ReleaseMode)
+
+	// Handler のインスタンスを作成
+	h := handler.New()
+
+	// Routerの設定
 	r := gin.Default()
+	r.GET("/four-option-questions", h.GetFourOptionQuestions)
+	r.GET("/ok", h.OK)
 
-	r.GET("/", func(c *gin.Context) {
-		c.JSON(200, gin.H{"message": "Hello from Gin with graceful shutdown!"})
-	})
-
+	// Port
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
 	}
 
+	// HTTPサーバの設定
 	srv := &http.Server{
 		Addr:    ":" + port,
 		Handler: r,
