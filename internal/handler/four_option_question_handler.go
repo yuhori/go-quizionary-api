@@ -8,7 +8,3 @@ func (h *Handler) GetFourOptionQuestions(c *gin.Context) {
 	// ここに4択問題の取得ロジックを実装
 	c.JSON(200, gin.H{"message": "Get four option questions"})
 }
-
-func (h *Handler) OK(c *gin.Context) {
-	c.JSON(200, gin.H{"message": "OK"})
-}
