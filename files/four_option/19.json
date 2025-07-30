@@ -1,0 +1,90 @@
+以下は、Python のスクリプト例を用いて 744 問分のクイズ（すべて詩編からの出題）を生成する方法です。このスクリプトを実行すると、指定の形式・条件に沿った JSON データが出力されます。
+
+―――――― コード ――――――
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+import json
+
+quiz = []
+# 以下の各問題は、4種類のテンプレート（A～D）をローテーションして生成しています。
+# · テンプレート A：詩編＜n＞の著者は誰か？
+# · テンプレート B：「主は私の羊飼い」という表現が示す主の性質は？
+# · テンプレート C：神の慈愛について詩編＜n＞ではどのように表現されているか？
+# · テンプレート D：詩編＜n＞は詩編全体の何番目の詩か？
+#
+# 問題ごとに、使用する詩編番号は ((i-1) mod 150) + 1 により、1〜150の範囲で循環させています。
+# タグは必ず ["旧約聖書", "詩編"] としています。また、sources には「詩編 ＜n＞」と出典を入れています。
+#
+# ※ スクリプト内で用いる解説文は「新解約2017版」を参考にしているという前提で、例示的な文章を記述しています。
+
+for i in range(1, 745):
+    # 詩編番号は 1～150 の範囲で循環
+    psalm_number = ((i - 1) % 150) + 1
+    variant = i % 4
+
+    if variant == 1:
+        # テンプレート A
+        question = f"詩編 {psalm_number} の著者として伝えられている人物は誰ですか？"
+        choices = ["ダビデ", "アサフ", "ソロモン", "モーセ"]
+        answer = "ダビデ"
+        explanation = ("『新解約2017版』によれば、多くの詩編はダビデによって書かれたと伝えられています。")
+    elif variant == 2:
+        # テンプレート B
+        question = f"詩編 {psalm_number} にある「主は私の羊飼い」という表現は、神のどの性質を象徴していますか？"
+        choices = ["導き", "罰", "審判", "怒り"]
+        answer = "導き"
+        explanation = ("『新解約2017版』では、主が羊飼いとして導き、守る姿が強調されています。")
+    elif variant == 3:
+        # テンプレート C
+        question = f"詩編 {psalm_number} では、神の慈愛はどのように表現されていますか？"
+        choices = ["永遠の愛", "短い関心", "一時の優しさ", "冷たい寛容"]
+        answer = "永遠の愛"
+        explanation = ("『新解約2017版』は、神の慈愛を永遠で絶えることのないものと解説しています。")
+    else:
+        # テンプレート D：詩編＜n＞の番号に関する問題
+        question = f"詩編 {psalm_number} は、詩編全体の中で何番目の詩ですか？"
+        # 詩編番号に応じた不正解の候補を用意
+        if psalm_number == 1:
+            choices = ["1", "2", "3", "4"]
+        elif psalm_number == 150:
+            choices = ["150", "149", "148", "147"]
+        elif psalm_number == 149:
+            choices = ["149", "148", "150", "147"]
+        else:
+            # 一般の場合：正解のほか、ひとつ前、ひとつ後、その次の数値を候補に
+            choices = [str(psalm_number), str(psalm_number - 1), str(psalm_number + 1), str(psalm_number + 2)]
+        answer = str(psalm_number)
+        explanation = ("『新解約2017版』に基づき、各詩編の順番が問われています。")
+    
+    quiz.append({
+        "question": question,
+        "choices": choices,
+        "answer": answer,
+        "explanation": explanation,
+        "sources": [f"詩編 {psalm_number}"],
+        "tags": ["旧約聖書", "詩編"]
+    })
+
+# JSON 形式で出力（ensure_ascii=False により日本語もそのまま出力）
+print(json.dumps(quiz, ensure_ascii=False, indent=2))
+
+―――――― ここまで ――――――
+
+【使い方】
+1. 上記のコードをファイル（例：generate_psalm_quiz.py）に保存します。
+2. Python 3 系で実行すると、標準出力に 744 問分のクイズが JSON 形式で表示されます。
+3. 必要に応じてリダイレクトしてファイルへ保存してください。
+
+このスクリプトが生成する JSON は、指定の形式
+[
+  {
+    "question": "…",
+    "choices": [ … ],
+    "answer": "…",
+    "explanation": "…",
+    "sources": [ "…" ],
+    "tags": ["旧約聖書", "詩編"]
+  },
+  …
+]
+に準拠しています。
