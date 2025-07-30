@@ -66,6 +66,6 @@ func (qm *QuizManager) ChooseQuizzes(
 	quizNum int,
 	targetTags []string,
 ) ([]string, error) {
-	// ここに4択問題の取得ロジックを実装
+	// TODO: 実装
 	return []string{"Question 1", "Question 2", "Question 3", "Question 4"}, nil
 }
