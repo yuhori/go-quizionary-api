@@ -27,8 +27,12 @@ func main() {
 
 	// Routerの設定
 	r := gin.Default()
-	r.GET("/four-option-questions", h.GetFourOptionQuizzes)
 	r.GET("/ok", h.OK)
+
+	// api route 設定
+	api := r.Group("/api/v1")
+	api.GET("/four-option-questions", h.GetFourOptionQuizzes)
+	api.GET("/chapters", h.GetChapters)
 
 	// Port
 	port := os.Getenv("PORT")

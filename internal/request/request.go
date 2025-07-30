@@ -7,9 +7,21 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type BookType string
+
+const (
+	OldBookType BookType = "old"
+	NewBookType BookType = "new"
+	AllBookType BookType = "all"
+)
+
 type GetFourOptionQuizzesRequest struct {
 	QuizChapter int
 	QuizNum     int
+}
+
+type GetChaptersRequest struct {
+	BookType BookType
 }
 
 func ParseGetFourOptionQuizzesRequest(c *gin.Context) (*GetFourOptionQuizzesRequest, error) {
@@ -37,5 +49,19 @@ func ParseGetFourOptionQuizzesRequest(c *gin.Context) (*GetFourOptionQuizzesRequ
 	return &GetFourOptionQuizzesRequest{
 		QuizChapter: quizChapter,
 		QuizNum:     quizNum,
+	}, nil
+}
+
+func ParseGetChaptersRequest(c *gin.Context) (*GetChaptersRequest, error) {
+	// クエリパラメータから値を取得
+	bookType := c.DefaultQuery("type", string(AllBookType))
+
+	// バリデーション
+	if bookType != string(OldBookType) && bookType != string(NewBookType) && bookType != string(AllBookType) {
+		return nil, fmt.Errorf("invalid book type: %s", bookType)
+	}
+
+	return &GetChaptersRequest{
+		BookType: BookType(bookType),
 	}, nil
 }
