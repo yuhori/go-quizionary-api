@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -18,7 +19,10 @@ func main() {
 	gin.SetMode(gin.ReleaseMode)
 
 	// Handler のインスタンスを作成
-	h := handler.New()
+	h, err := handler.New("files")
+	if err != nil {
+		panic(fmt.Errorf("failed to create handler: %w", err))
+	}
 
 	// Routerの設定
 	r := gin.Default()
@@ -40,7 +44,7 @@ func main() {
 	// 別ゴルーチンでサーバ起動
 	go func() {
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("listen: %s\n", err)
+			panic(fmt.Errorf("failed to start server: %w", err))
 		}
 	}()
 	log.Printf("Server started on port %s\n", port)
