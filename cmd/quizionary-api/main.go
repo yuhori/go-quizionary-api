@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
@@ -47,13 +48,13 @@ func main() {
 			panic(fmt.Errorf("failed to start server: %w", err))
 		}
 	}()
-	log.Printf("Server started on port %s\n", port)
+	slog.Info("Server started", "port", port)
 
 	// シグナル受信用チャネル
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
-	log.Println("Shutdown signal received...")
+	slog.Info("Shutting down server...")
 
 	// コンテキストタイムアウト付きでシャットダウン
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -62,5 +63,5 @@ func main() {
 		log.Fatal("Server forced to shutdown:", err)
 	}
 
-	log.Println("Server exiting gracefully")
+	slog.Info("Server exited gracefully")
 }
