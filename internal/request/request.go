@@ -16,23 +16,23 @@ const (
 )
 
 type GetFourOptionQuizzesRequest struct {
-	QuizChapter int
-	QuizNum     int
+	QuizIndex int
+	QuizNum   int
 }
 
-type GetChaptersRequest struct {
+type GetTitlesRequest struct {
 	BookType BookType
 }
 
 func ParseGetFourOptionQuizzesRequest(c *gin.Context) (*GetFourOptionQuizzesRequest, error) {
 	// クエリパラメータから値を取得
-	chapter := c.Query("chapter")
+	index := c.Query("index")
 	num := c.Query("num")
 
 	// int に変換
-	quizChapter, err := strconv.Atoi(chapter)
+	quizIndex, err := strconv.Atoi(index)
 	if err != nil {
-		return nil, fmt.Errorf("invalid chapter: %w", err)
+		return nil, fmt.Errorf("invalid index: %w", err)
 	}
 	quizNum, err := strconv.Atoi(num)
 	if err != nil {
@@ -40,19 +40,19 @@ func ParseGetFourOptionQuizzesRequest(c *gin.Context) (*GetFourOptionQuizzesRequ
 	}
 
 	// バリデーション
-	if quizChapter < 1 || quizChapter > 66 {
-		return nil, fmt.Errorf("chapter must be between 1 and 66")
+	if quizIndex < 1 || quizIndex > 66 {
+		return nil, fmt.Errorf("index must be between 1 and 66")
 	}
 	if quizNum < 1 {
 		return nil, fmt.Errorf("num must be greater than 0")
 	}
 	return &GetFourOptionQuizzesRequest{
-		QuizChapter: quizChapter,
-		QuizNum:     quizNum,
+		QuizIndex: quizIndex,
+		QuizNum:   quizNum,
 	}, nil
 }
 
-func ParseGetChaptersRequest(c *gin.Context) (*GetChaptersRequest, error) {
+func ParseGetTitlesRequest(c *gin.Context) (*GetTitlesRequest, error) {
 	// クエリパラメータから値を取得
 	bookType := c.DefaultQuery("type", string(AllBookType))
 
@@ -61,7 +61,7 @@ func ParseGetChaptersRequest(c *gin.Context) (*GetChaptersRequest, error) {
 		return nil, fmt.Errorf("invalid book type: %s", bookType)
 	}
 
-	return &GetChaptersRequest{
+	return &GetTitlesRequest{
 		BookType: BookType(bookType),
 	}, nil
 }

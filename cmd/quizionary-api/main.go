@@ -32,7 +32,7 @@ func main() {
 	// api route 設定
 	api := r.Group("/api/v1")
 	api.GET("/four-option-questions", h.GetFourOptionQuizzes)
-	api.GET("/chapters", h.GetChapters)
+	api.GET("/titles", h.GetTitles)
 
 	// Port
 	port := os.Getenv("PORT")

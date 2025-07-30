@@ -45,7 +45,7 @@ func (h *Handler) GetFourOptionQuizzes(c *gin.Context) {
 	// QuizManagerから4択問題を取得
 	quizzes, err := h.quizManager.ChooseQuizzes(
 		quiz.FourOptionQuiz,
-		req.QuizChapter,
+		req.QuizIndex,
 		req.QuizNum,
 	)
 	if err != nil {
@@ -56,9 +56,9 @@ func (h *Handler) GetFourOptionQuizzes(c *gin.Context) {
 	c.JSON(200, gin.H{"quizzes": quizzes})
 }
 
-func (h *Handler) GetChapters(c *gin.Context) {
+func (h *Handler) GetTitles(c *gin.Context) {
 	// リクエストをパース
-	req, err := request.ParseGetChaptersRequest(c)
+	req, err := request.ParseGetTitlesRequest(c)
 	if err != nil {
 		c.JSON(400, gin.H{"error": fmt.Sprintf("invalid request: %v", err)})
 		return
